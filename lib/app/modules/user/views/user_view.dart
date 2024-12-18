@@ -10,10 +10,6 @@ class UserView extends GetView<UserController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('UserView'),
-        centerTitle: true,
-      ),
       body:  ElevatedButton(
         onPressed: AuthDirection.logout,
         child: Text(

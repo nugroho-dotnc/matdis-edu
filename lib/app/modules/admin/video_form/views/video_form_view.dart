@@ -5,12 +5,13 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:matdis_edu/app/data/component/add_card.dart';
 import 'package:matdis_edu/app/data/component/button.dart';
+import 'package:matdis_edu/app/data/component/chewie_video_card.dart';
 import 'package:matdis_edu/app/data/component/input.dart';
 import 'package:matdis_edu/app/data/component/loading_page.dart';
-import 'package:matdis_edu/app/data/component/video_card.dart';
 import 'package:matdis_edu/app/data/global_data.dart';
 import 'package:video_player/video_player.dart';
 
+import '../../../../data/component/pick_card.dart';
 import '../../../../data/theme/colours.dart';
 import '../controllers/video_form_controller.dart';
 
@@ -21,8 +22,12 @@ class VideoFormView extends GetView<VideoFormController> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Tambah Video'),
+        title: Text(controller.isEdit.value?'Edit Video':'Tambah Video',
+          style: GoogleFonts.poppins(fontSize: 24, color: Colors.white),),
         centerTitle: true,
+        actionsIconTheme: IconThemeData(color: Colours.white),
+        backgroundColor: Colours.primary500,
+        iconTheme: IconThemeData(color: Colours.white),
       ),
       body: Stack(
         children: [
@@ -95,79 +100,62 @@ class MainSection extends StatelessWidget {
                 ),
               );
             } else {
-              return PickCard(
+              return controller.isEdit.value
+                  ? GestureDetector(
+                onTap: controller.pickThumbnail,
+                child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(8),
+                    color: Colors.grey[200],
+                  ),
+                  child: AspectRatio(
+                    aspectRatio: 16.0 / 9.0,
+                    child: Image.network(
+                      controller.videoModel.thumbnailUrl,
+                      fit: BoxFit.cover,
+                    ),
+                  )
+                ),
+              )
+                  : PickCard(
                 text: "Upload Thumbnail",
                 onClick: controller.pickThumbnail,
               );
             }
           }),
         ),
-        Padding(
-          padding: const EdgeInsets.all(20.0),
-          child: Obx(() {
-            if (controller.video.value == null) {
-              return PickCard(
-                text: "Upload video",
-                onClick: controller.pickVideo,
-              );
-            } else {
-              return VideoCard(
-                path: controller.video.value!.path,
-                uploadOption: UploadOption.file,
-              );
-            }
-          }),
-        ),
+        Obx(() {
+          return Visibility(
+            visible: !controller.isEdit.value,
+            child: Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: Obx(() {
+                if (controller.video.value == null) {
+                  return PickCard(
+                    text: "Upload video",
+                    onClick: controller.pickVideo,
+                  );
+                } else {
+                  return GestureDetector(
+                    onLongPress: controller.pickVideo,
+                    child: ChewieVideoCard(
+                      controller: controller.chewieController,
+                      onFuture: controller.initializeVideoPlayerFuture,
+                    ),
+                  );
+                }
+              }),
+            ),
+          );
+        }),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
           child: CustomButton(
-            onClick: controller.uploadVideo,
-            text: "Upload Video",
+            onClick: controller.isEdit.value?controller.editVideo:controller.uploadVideo,
+            text: controller.isEdit.value?"Update Video":"Upload Video",
           ),
         ),
       ],
-    );
-  }
-}
-
-class PickCard extends StatelessWidget {
-  const PickCard({
-    super.key,
-    required this.text,
-    required this.onClick,
-  });
-
-  final String text;
-  final Function() onClick;
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onClick,
-      child: Container(
-        height: 200,
-        width: double.infinity,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(8),
-          color: Colours.primary100,
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Icon(
-              Icons.cloud_upload_outlined,
-              color: Colours.primary500,
-              size: 40,
-            ),
-            SizedBox(height: 10),
-            Text(
-              text,
-              style: GoogleFonts.poppins(color: Colours.primary500),
-            ),
-          ],
-        ),
-      ),
     );
   }
 }

@@ -1,11 +1,15 @@
 import 'package:get/get.dart';
 
 import '../modules/admin/bindings/admin_binding.dart';
+import '../modules/admin/soal_form/bindings/soal_form_binding.dart';
+import '../modules/admin/soal_form/views/soal_form_view.dart';
 import '../modules/admin/video_form/bindings/video_form_binding.dart';
 import '../modules/admin/video_form/views/video_form_view.dart';
 import '../modules/admin/views/admin_view.dart';
 import '../modules/auth/bindings/auth_binding.dart';
 import '../modules/auth/views/auth_view.dart';
+import '../modules/soal_detail/bindings/soal_detail_binding.dart';
+import '../modules/soal_detail/views/soal_detail_view.dart';
 import '../modules/user/bindings/user_binding.dart';
 import '../modules/user/views/user_view.dart';
 import '../modules/video_detail/bindings/video_detail_binding.dart';
@@ -16,7 +20,7 @@ part 'app_routes.dart';
 class AppPages {
   AppPages._();
 
-  static const INITIAL = Routes.ADMIN;
+  static const INITIAL = Routes.AUTH;
 
   static final routes = [
     GetPage(
@@ -39,6 +43,11 @@ class AppPages {
           page: () => const VideoFormView(),
           binding: VideoFormBinding(),
         ),
+        GetPage(
+          name: _Paths.SOAL_FORM,
+          page: () => const SoalFormView(),
+          binding: SoalFormBinding(),
+        ),
       ],
     ),
     GetPage(
@@ -46,6 +55,10 @@ class AppPages {
       page: () => VideoDetailView(),
       binding: VideoDetailBinding(),
     ),
-
+    GetPage(
+      name: _Paths.SOAL_DETAIL,
+      page: () => const SoalDetailView(),
+      binding: SoalDetailBinding(),
+    ),
   ];
 }

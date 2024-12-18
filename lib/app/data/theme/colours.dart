@@ -25,4 +25,6 @@ class Colours {
   // Supporting Colors
   static const Color font = Color(0xff2C3E50); // Dark font
   static const Color background = Color(0xffFFFFFF); // Light background
+  static const Color white = Color(0xffFFFFFF); // Light background
+
 }

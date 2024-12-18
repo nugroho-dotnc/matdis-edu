@@ -10,6 +10,8 @@ abstract class Routes {
   static const ADD_VIDEO = _Paths.ADD_VIDEO;
   static const VIDEO_FORM = _Paths.ADMIN + _Paths.VIDEO_FORM;
   static const VIDEO_DETAIL = _Paths.VIDEO_DETAIL;
+  static const SOAL_FORM = _Paths.ADMIN + _Paths.SOAL_FORM;
+  static const SOAL_DETAIL = _Paths.SOAL_DETAIL;
 }
 
 abstract class _Paths {
@@ -21,5 +23,6 @@ abstract class _Paths {
   static const ADD_VIDEO = '/add-video';
   static const VIDEO_FORM = '/video-form';
   static const VIDEO_DETAIL = '/video-detail';
-
+  static const SOAL_FORM = '/soal-form';
+  static const SOAL_DETAIL = '/soal-detail';
 }

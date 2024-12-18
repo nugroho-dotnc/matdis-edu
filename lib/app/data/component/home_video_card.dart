@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:matdis_edu/app/data/theme/colours.dart';
 import 'package:popover/popover.dart';
 
@@ -7,16 +8,13 @@ import 'package:popover/popover.dart';
 class HomeVideoCard extends StatelessWidget {
   final String thumbnailUrl;
   final String title;
-  final VoidCallback onEdit;
-  final VoidCallback onDelete;
+  final String category;
   final VoidCallback onClick;
-  final VoidCallback onOptionsPressed;
-
   const HomeVideoCard({
     Key? key,
     required this.thumbnailUrl,
     required this.title,
-    required this.onOptionsPressed, required this.onEdit, required this.onDelete, required this.onClick,
+     required this.onClick, required this.category,
   }) : super(key: key);
 
   @override
@@ -67,26 +65,28 @@ class HomeVideoCard extends StatelessWidget {
             // Bagian bawah: Judul dan ikon opsi
             Padding(
               padding: const EdgeInsets.all(8.0),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-                  // Judul video
-                  Expanded(
-                    child: Text(
-                      title,
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
+                  Text(
+                    title,
+                    style: GoogleFonts.afacad(
+                      fontSize: 24,
+                      color: Colors.black,
+                      fontWeight: FontWeight.bold,
                     ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
                   ),
-                  // Ikon opsi (tiga titik)
-                  Builder(
-                    builder: (ctx) =>  VideosMenu(ctx: ctx, onDelete: onDelete, onEdit: onEdit,),
-                  ),
+                  Text(
+                    "Kategori: ${category}",
+                    style: GoogleFonts.afacad(
+                      fontSize: 16,
+                      color: Colours.primary500,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  )
                 ],
               ),
             ),
@@ -115,13 +115,13 @@ class HomeVideoCard extends StatelessWidget {
                         items: [
                           PopupMenuItem(
                             child: GestureDetector(
-                              onTap: () => onEdit,
+                              onTap: onEdit,
                               child: Text("Edit"),
                             ),
                           ),
                           PopupMenuItem(
                             child: GestureDetector(
-                              onTap: () => onDelete,
+                              onTap: onDelete,
                               child: Text("Delete"),
                             ),
                           ),

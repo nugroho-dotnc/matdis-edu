@@ -1,19 +1,15 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:matdis_edu/app/data/global_data.dart';
-import 'package:matdis_edu/app/modules/admin/video_form/controllers/video_form_controller.dart';
 import 'package:video_player/video_player.dart';
-
-import '../model/video_model.dart';
 
 class VideoController extends GetxController {
   late VideoPlayerController videoPlayerController;
   late Future<void> initializeVideoPlayerFuture;
-
+  late String pathUrl;
+  late UploadOption uploadOption;
   final isPlaying = false.obs;
   final showOverlay = false.obs;
   final progress = 0.0.obs;
@@ -21,19 +17,20 @@ class VideoController extends GetxController {
 
   Timer? progressTimer;
   Timer? overlayTimer;
-
+  VideoController({required String pathUrl, required UploadOption uploadOption}){
+    this.pathUrl = pathUrl;
+    this.uploadOption  = uploadOption;
+  }
   void initializeVideoPlayer(String pathUrl, UploadOption uploadOption) {
     if (uploadOption == UploadOption.file) {
       videoPlayerController = VideoPlayerController.file(File(pathUrl));
     } else {
       videoPlayerController = VideoPlayerController.networkUrl(Uri.parse(pathUrl));
     }
-
     initializeVideoPlayerFuture = videoPlayerController.initialize().then((_) {
       videoDuration.value = videoPlayerController.value.duration.inSeconds.toDouble();
       videoPlayerController.setLooping(true);
       playVideo();
-
       progressTimer = Timer.periodic(Duration(seconds: 1), (timer) {
         if (videoPlayerController.value.isInitialized) {
           progress.value = videoPlayerController.value.position.inSeconds.toDouble() /
@@ -89,10 +86,23 @@ class VideoController extends GetxController {
   }
 
   @override
+  void onInit() {
+    super.onInit();
+    initializeVideoPlayer(pathUrl, uploadOption);
+  }
+
+  @override
   void onClose() {
-    videoPlayerController.dispose();
+    // Pastikan video berhenti jika sedang berjalan
+    if (videoPlayerController.value.isInitialized) {
+      videoPlayerController.pause(); // Hentikan video
+      videoPlayerController.dispose(); // Lepaskan sumber daya
+    }
+
+    // Hentikan semua timer
     progressTimer?.cancel();
     overlayTimer?.cancel();
+
     super.onClose();
   }
 }

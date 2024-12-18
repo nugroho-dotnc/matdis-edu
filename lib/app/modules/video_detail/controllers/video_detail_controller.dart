@@ -1,92 +1,99 @@
 import 'dart:async';
+import 'dart:io';
+import 'package:chewie/chewie.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:matdis_edu/app/data/component/button.dart';
 import 'package:matdis_edu/app/data/model/video_model.dart';
+import 'package:matdis_edu/app/data/service/video_service.dart';
+import 'package:matdis_edu/app/data/theme/colours.dart';
+import 'package:matdis_edu/app/routes/app_pages.dart';
 import 'package:video_player/video_player.dart';
 
 class VideoDetailController extends GetxController {
-  late VideoPlayerController videoPlayerController;
+  late final VideoModel videoModel;
+  late final VideoPlayerController videoPlayerController;
+  late ChewieController chewieController;
   late Future<void> initializeVideoPlayerFuture;
-  late VideoModel videoModel;
-
-  final isPlaying = false.obs;
-  final showOverlay = false.obs;
-  final progress = 0.0.obs;
-  final videoDuration = 0.0.obs;
-
-  late Timer progressTimer; // Timer untuk update progress bar
-  Timer? overlayTimer; // Timer untuk menyembunyikan overlay
-
+  final VideoService videoService = VideoService();
   @override
-  void onInit() {
+  void onInit() async {
     super.onInit();
-
-    // Ambil video model dari Get.arguments
     videoModel = Get.arguments as VideoModel;
-
-    // Inisialisasi VideoPlayerController
     Uri videoUrl = Uri.parse(videoModel.videoUrl);
     videoPlayerController = VideoPlayerController.networkUrl(videoUrl);
-
-    // Inisialisasi video player
-    initializeVideoPlayerFuture = videoPlayerController.initialize().then((_) {
-      videoDuration.value = videoPlayerController.value.duration.inSeconds.toDouble();
-      videoPlayerController.play();
-      videoPlayerController.setLooping(true);
-      isPlaying.value = true;
-
-      // Timer untuk update progress bar setiap detik
-      progressTimer = Timer.periodic(Duration(seconds: 1), (timer) {
-        if (videoPlayerController.value.isInitialized) {
-          progress.value = videoPlayerController.value.position.inSeconds.toDouble() /
-              videoPlayerController.value.duration.inSeconds.toDouble();
-        }
-      });
-    });
-
-    // Listener untuk mendeteksi perubahan status video
-    videoPlayerController.addListener(() {
-      isPlaying.value = videoPlayerController.value.isPlaying;
-    });
+    initializeVideoPlayerFuture = videoPlayerController.initialize();
+    chewieController = ChewieController(
+      videoPlayerController: videoPlayerController,
+      autoPlay: true,
+      looping: true,
+    );
   }
-
+  @override
+  void onReady() {
+    // TODO: implement onReady
+    super.onReady();
+  }
+  void deleteVideo() async {
+    try {
+      await videoService.deleteVideo(videoModel);
+    } catch (e) {
+      Get.snackbar("error", e.toString());
+    }
+  }
+  void openBottomSheet(){
+    Get.bottomSheet(
+      Container(
+        padding: EdgeInsets.all(16),
+        width: double.infinity,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Container(
+              width: 100,
+              height: 10,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(24),
+                color: Colours.neutral500,
+              ),
+            ),
+            const SizedBox(height: 10),
+            SizedBox(
+                width: double.infinity,
+                child: CustomButton(
+                    onClick: ()=>Get.toNamed(Routes.VIDEO_FORM, arguments: videoModel), text: "Edit Video")
+            ),
+            const SizedBox(height: 10),
+            SizedBox(
+                width: double.infinity,
+                child: CustomButton(
+                    onClick: ()=>deleteVideo, text: "Delete Video")
+            )
+          ],
+        ),
+      ),
+      isDismissible: true, // Bisa ditutup dengan tap di luar
+      enableDrag: true,    // Bisa di-drag untuk ditutup
+    );
+  }
   @override
   void onClose() {
-    videoPlayerController.dispose();
-    progressTimer.cancel();
-    overlayTimer?.cancel();
     super.onClose();
-  }
-
-  void togglePlayPause() {
-    if (videoPlayerController.value.isPlaying) {
-      videoPlayerController.pause();
-      isPlaying.value = false;
-    } else {
-      videoPlayerController.play();
-      isPlaying.value = true;
-      if (showOverlay.value) {
-        showOverlayWithTimeout();
-      }
+    if (initializeVideoPlayerFuture != null) {
+      initializeVideoPlayerFuture.then((_) {
+        videoPlayerController.dispose();
+        chewieController.dispose();
+      }).catchError((error) {
+        print("Error disposing video resources: $error");
+      });
     }
-
-    // Tampilkan overlay setiap kali tombol play/pause ditekan
-    showOverlayWithTimeout();
-  }
-
-  void toggleOverlay() {
-    showOverlay.value = !showOverlay.value;
-  }
-
-  void showOverlayWithTimeout() {
-    showOverlay.value = true;
-    overlayTimer?.cancel(); // Hentikan timer sebelumnya jika ada
-    overlayTimer = Timer(Duration(seconds: 2), () {
-      showOverlay.value = false;
-    });
-  }
-
-  void seekTo(double newProgress) {
-    final position = Duration(seconds: (newProgress * videoPlayerController.value.duration.inSeconds).toInt());
-    videoPlayerController.seekTo(position);
   }
 }

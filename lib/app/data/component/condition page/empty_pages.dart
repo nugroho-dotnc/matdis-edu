@@ -16,7 +16,7 @@ class EmptyPages extends StatelessWidget {
             height: 200,
             padding: EdgeInsets.symmetric(vertical: 20),
             child: SvgPicture.asset('assets/empty_pages.svg', fit: BoxFit.contain,)),
-        Text("video tidak tersedia", style: GoogleFonts.poppins(
+        Text("Data tidak tersedia", style: GoogleFonts.poppins(
             color: Colours.font,
             fontWeight: FontWeight.bold,
             fontSize: 24

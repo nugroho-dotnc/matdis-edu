@@ -20,7 +20,7 @@ class SubVideoPage extends StatelessWidget {
         } else if (snapshot.hasError) {
           print(snapshot.error); // Hanya untuk debugging
           return const Center(
-            child: ErrorPages(),
+            child: ErrorPages(messages: "Terjadi Kesalahan",),
           );
         } else if (snapshot.hasData) {
           final videos = snapshot.data ?? [];

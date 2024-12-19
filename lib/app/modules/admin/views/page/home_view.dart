@@ -76,7 +76,7 @@ class HomeView extends GetView<HomeController> {
                   } else if (snapshot.hasError) {
                     print(snapshot.error); // Hanya untuk debugging
                     return const Center(
-                      child: ErrorPages(),
+                      child: ErrorPages(messages: "Terjadi kesalahan"),
                     );
                   } else if (snapshot.hasData) {
                     final videos = snapshot.data ?? [];

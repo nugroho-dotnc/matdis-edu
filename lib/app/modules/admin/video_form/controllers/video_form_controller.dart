@@ -1,21 +1,18 @@
 import 'dart:io';
 
 import 'package:chewie/chewie.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
-import 'package:matdis_edu/app/data/helper/urlDecoder.dart';
+import 'package:matdis_edu/app/data/global_data.dart';
 import 'package:matdis_edu/app/data/model/video_model.dart';
 import 'package:matdis_edu/app/data/service/video_service.dart';
 import 'package:matdis_edu/app/routes/app_pages.dart';
 import 'package:video_player/video_player.dart';
 
 class VideoFormController extends GetxController {
-  // Firebase
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   // Form Controllers
   final TextEditingController titleController = TextEditingController();
   final TextEditingController descriptionController = TextEditingController();
@@ -37,12 +34,7 @@ class VideoFormController extends GetxController {
 
   VideoService videoService = VideoService();
   // Categories
-  final List<String> items = [
-    'Logika',
-    'Himpunan',
-    'Matriks, relasi, fungsi',
-    'Induksi Matematik',
-  ];
+  final List<String> items = GlobalData.Category;
 
   // Max file size (200 MB)
   final int maxFileSize = 200 * 1024 * 1024;
@@ -56,19 +48,17 @@ class VideoFormController extends GetxController {
       isEdit.value = true;
       titleController.text = videoModel.title;
       descriptionController.text = videoModel.description;
-      for(int i = 0; i > items.length; i++){
-        if(items[i] == videoModel.category){
-          selectedValue.value = items[i];
-        }
-      }
+      selectedValue.value = items.firstWhere(
+            (e) => e == videoModel.category,
+        orElse: () => selectedValue.value,
+      );
     }
-  }
 
+  }
   /// Updates the selected category value
   void updateSelectedValue(String newValue) {
     selectedValue.value = newValue;
   }
-
   /// Picks a video from the gallery
   Future<void> pickVideo() async {
     if(video.value != null){
@@ -102,7 +92,6 @@ class VideoFormController extends GetxController {
       Get.snackbar("Error", "Gagal memilih video: ${e.toString()}");
     }
   }
-
   /// Picks a thumbnail image from the gallery
   Future<void> pickThumbnail() async {
     try {
@@ -123,8 +112,8 @@ class VideoFormController extends GetxController {
     }
     try {
       isLoading.value = true;
-      final String title = titleController.text.trim();
-      final String description = descriptionController.text.trim();
+      final String title = titleController.text;
+      final String description = descriptionController.text;
       if (title.isEmpty || description.isEmpty) {
         Get.snackbar("Error", "Judul dan Deskripsi tidak boleh kosong");
         isLoading.value = false;
@@ -159,31 +148,26 @@ class VideoFormController extends GetxController {
       isLoading.value = false;
       Get.snackbar("Success", "Video berhasil diunggah!");
       clearForm();
-      Get.offNamed(Routes.ADMIN);
+      Get.offAllNamed(Routes.ADMIN);
     } catch (e) {
       isLoading.value = false;
       Get.snackbar("Error", "Gagal mengunggah video: ${e.toString()}");
     }
   }
-
   Future<void> editVideo() async {
     try {
       isLoading.value = true;
-      final String title = titleController.text.trim();
-      final String description = descriptionController.text.trim();
+      final String title = titleController.text;
+      final String description = descriptionController.text;
       if (title.isEmpty || description.isEmpty) {
         Get.snackbar("Error", "Judul dan Deskripsi tidak boleh kosong");
         isLoading.value = false;
         return;
       }
-      String thumbnailUrl;
+      String thumbnailUrl = videoModel.thumbnailUrl;;
       if (thumbnail.value != null) {
-        // Delete old thumbnail if new one is selected
-        final ref = FirebaseStorage.instance.refFromURL(videoModel.thumbnailUrl);
-        await ref.delete();
+        await videoService.deleteFileIfExists(videoModel.thumbnailUrl);
         thumbnailUrl = await videoService.uploadThumbnail(thumbnail.value!);
-      } else {
-        thumbnailUrl = videoModel.thumbnailUrl; // Keep old thumbnail if none selected
       }
       // Create updated VideoModel
       final VideoModel newVideo = VideoModel(
@@ -200,7 +184,7 @@ class VideoFormController extends GetxController {
       isLoading.value = false;
       Get.snackbar("Success", "Video berhasil diperbarui!");
       clearForm();
-      Get.offNamed(Routes.ADMIN);
+      Get.offAllNamed(Routes.ADMIN);
     } catch (e) {
       isLoading.value = false;
       Get.snackbar("Error", e.toString());

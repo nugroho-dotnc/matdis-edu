@@ -11,6 +11,8 @@ import 'package:matdis_edu/app/data/model/video_model.dart';
 import 'package:matdis_edu/app/data/service/video_service.dart';
 import 'package:matdis_edu/app/data/theme/colours.dart';
 import 'package:matdis_edu/app/routes/app_pages.dart';
+import 'package:quickalert/models/quickalert_type.dart';
+import 'package:quickalert/quickalert.dart';
 import 'package:video_player/video_player.dart';
 
 class VideoDetailController extends GetxController {
@@ -40,6 +42,8 @@ class VideoDetailController extends GetxController {
   void deleteVideo() async {
     try {
       await videoService.deleteVideo(videoModel);
+      Get.snackbar("Success", "Video Berhasil Dihapus");
+      Get.offAllNamed(Routes.ADMIN);
     } catch (e) {
       Get.snackbar("error", e.toString());
     }
@@ -75,7 +79,19 @@ class VideoDetailController extends GetxController {
             SizedBox(
                 width: double.infinity,
                 child: CustomButton(
-                    onClick: ()=>deleteVideo, text: "Delete Video")
+                    onClick: ()=>QuickAlert.show(
+                        context: Get.context!,
+                        type: QuickAlertType.warning,
+                        text: 'Yakin Ingin Menghapus Video ini?',
+                        showCancelBtn: true,
+                        showConfirmBtn: true,
+                        confirmBtnText: 'Yes',
+                        cancelBtnText: 'No',
+                        confirmBtnColor: Colors.red,
+                        onConfirmBtnTap: ()=>deleteVideo(),
+                        onCancelBtnTap: ()=>Get.back()
+                    ),
+                    text: "Delete Video")
             )
           ],
         ),

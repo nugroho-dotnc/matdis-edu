@@ -7,14 +7,15 @@ import 'package:heroicons/heroicons.dart';
 import 'package:matdis_edu/app/data/component/button.dart';
 import 'package:matdis_edu/app/data/helper/authDirection.dart';
 import 'package:matdis_edu/app/modules/admin/controllers/profile_controller.dart';
+import 'package:matdis_edu/app/modules/user/controllers/page%20controller/user_profile_controller.dart';
 import 'package:quickalert/models/quickalert_type.dart';
 import 'package:quickalert/widgets/quickalert_dialog.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../data/theme/colours.dart';
 
-class AccountView extends GetView<ProfileController> {
-  const AccountView({super.key});
+class UserProfilePage extends GetView<UserProfileController> {
+  const UserProfilePage({super.key});
   @override
   Widget build(BuildContext context) {
 
@@ -90,14 +91,14 @@ class AccountView extends GetView<ProfileController> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     ProfileTextField(
-                        initialValue: controller.username.value,
-                        textEditingController: controller.usernameTextEditingController,
-                        enabled: false,
+                      initialValue: controller.username.value,
+                      textEditingController: controller.usernameTextEditingController,
+                      enabled: false,
                     ),
                     ProfileTextField(
-                        initialValue: controller.email.value,
-                        textEditingController: controller.usernameTextEditingController,
-                        enabled: false,
+                      initialValue: controller.email.value,
+                      textEditingController: controller.usernameTextEditingController,
+                      enabled: false,
                     ),
                     SizedBox(
                       height: 40,
@@ -105,9 +106,9 @@ class AccountView extends GetView<ProfileController> {
                     Text(
                       "Credits",
                       style: GoogleFonts.afacad(
-                        fontWeight: FontWeight.w500,
-                        fontSize: 24,
-                        color: Colours.font
+                          fontWeight: FontWeight.w500,
+                          fontSize: 24,
+                          color: Colours.font
                       ),
                     ),
                     const Padding(
@@ -167,33 +168,33 @@ class CreditsCard extends StatelessWidget {
         height: 100,
         width: double.infinity,
         child: Card(
-          color: Colours.primary100,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(10.0),
-                child: Image.asset(path, fit: BoxFit.cover, height: 100, width: 100, ),
-              ),
-              Expanded(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text("${title}", style: GoogleFonts.afacad(fontSize: 20, color: Colours.primary500, fontWeight: FontWeight.w500),),
-                    Text("${description}", style: GoogleFonts.afacad(fontSize: 14, color: Colours.primary500, fontWeight: FontWeight.w300),),
-                  ],
+            color: Colours.primary100,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(10.0),
+                  child: Image.asset(path, fit: BoxFit.cover, height: 100, width: 100, ),
                 ),
-              ),
-              Container(
-                width: 30,
-                height: 100,
-                child: HeroIcon(HeroIcons.chevronRight, color: Colours.primary500, size: 32,),
-              )
-            ],
-          )
+                Expanded(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text("${title}", style: GoogleFonts.afacad(fontSize: 20, color: Colours.primary500, fontWeight: FontWeight.w500),),
+                      Text("${description}", style: GoogleFonts.afacad(fontSize: 14, color: Colours.primary500, fontWeight: FontWeight.w300),),
+                    ],
+                  ),
+                ),
+                Container(
+                  width: 30,
+                  height: 100,
+                  child: HeroIcon(HeroIcons.chevronRight, color: Colours.primary500, size: 32,),
+                )
+              ],
+            )
         ),
       ),
     );
@@ -235,8 +236,8 @@ class ProfileTextField extends StatelessWidget {
             hintStyle: TextStyle(color: Colours.primary200),
           ),
           style: GoogleFonts.poppins(
-            color: Colours.font,
-            fontSize: 16
+              color: Colours.font,
+              fontSize: 16
           ),
         ),
       ),

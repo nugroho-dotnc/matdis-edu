@@ -9,7 +9,7 @@ import 'package:matdis_edu/app/data/model/video_model.dart';
 
 class VideoService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  Future<List<VideoModel>> getUsers() async {
+  Future<List<VideoModel>> getVideo() async {
     List<VideoModel> video = [];
     QuerySnapshot snapshot = await _firestore.collection('videos').get();
     video.addAll(snapshot.docs.map((doc) {
@@ -17,7 +17,14 @@ class VideoService {
     }));
     return video;
   }
-
+  Future<List<VideoModel>> getVideoByCategories(String category) async {
+    List<VideoModel> video = [];
+    QuerySnapshot snapshot = await _firestore.collection('videos').where('category', isEqualTo: category).get();
+    video.addAll(snapshot.docs.map((doc) {
+      return VideoModel.fromMap(doc.data() as Map<String, dynamic>);
+    }));
+    return video;
+  }
   Future<void> addVideo(VideoModel videoModel) async{
     try{
       DocumentReference docRef = await _firestore.collection('videos').add(videoModel.toMap());
@@ -29,11 +36,9 @@ class VideoService {
   }
   Future<void> deleteVideo(VideoModel video) async {
     try {
-      final videoRef = FirebaseStorage.instance.refFromURL(video.thumbnailUrl);
-      final thumbnailRef = FirebaseStorage.instance.refFromURL(video.thumbnailUrl);
-      await videoRef.delete();
-      await thumbnailRef.delete();
-      await FirebaseFirestore.instance.collection('videos').doc(video.id).delete();
+     deleteFileIfExists(video.thumbnailUrl);
+     deleteFileIfExists(video.videoUrl);
+     await FirebaseFirestore.instance.collection('videos').doc(video.id).delete();
     } catch (e) {
       Get.snackbar("error", e.toString());
     }
@@ -63,5 +68,31 @@ class VideoService {
     final thumbnailUrl = await thumbnailSnapshot.ref.getDownloadURL();
     return thumbnailUrl;
   }
+  Future<bool> checkFileExists(String filePath) async {
+    try {
+      // Coba ambil metadata file
+      await FirebaseStorage.instance.refFromURL(filePath).getMetadata();
+      return true; // File ada
+    } catch (e) {
+      if (e is FirebaseException && e.code == 'object-not-found') {
+        return false; // File tidak ditemukan
+      }
+      rethrow; // Lempar ulang error jika bukan karena file tidak ada
+    }
+  }
 
+  Future<void> deleteFileIfExists(String filePath) async {
+    bool exists = await checkFileExists(filePath);
+    if (exists) {
+      try {
+        // Hapus file jika ditemukan
+        await FirebaseStorage.instance.refFromURL(filePath).delete();
+        print("File berhasil dihapus.");
+      } catch (e) {
+        print("Gagal menghapus file: $e");
+      }
+    } else {
+      print("File tidak ditemukan.");
+    }
+  }
 }

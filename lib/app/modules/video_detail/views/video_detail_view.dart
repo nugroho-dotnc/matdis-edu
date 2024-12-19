@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:heroicons/heroicons.dart';
 import 'package:matdis_edu/app/data/component/chewie_video_card.dart';
@@ -73,12 +74,12 @@ class VideoDetailView extends GetView<VideoDetailController> {
           ),
         ],
       ),
-      floatingActionButton: FloatingActionButton(
+      floatingActionButton: GetStorage().read("role") == "admin"?FloatingActionButton(
         shape: CircleBorder(),
         onPressed: controller.openBottomSheet,
         backgroundColor: Colours.primary500,
         child: const HeroIcon(HeroIcons.bars3, color: Colors.white),
-      ),
+      ): null,
     );
   }
 }

@@ -4,7 +4,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:matdis_edu/app/data/theme/colours.dart';
 
 class ErrorPages extends StatelessWidget {
-  const ErrorPages({super.key});
+  final String messages;
+  const ErrorPages({super.key, required this.messages});
 
   @override
   Widget build(BuildContext context) {
@@ -16,7 +17,7 @@ class ErrorPages extends StatelessWidget {
             height: 200,
             padding: EdgeInsets.symmetric(vertical: 20),
             child: SvgPicture.asset('assets/error_pages.svg', fit: BoxFit.contain,)),
-        Text("video tidak tersedia", style: GoogleFonts.poppins(
+        Text(messages, style: GoogleFonts.poppins(
             color: Colours.font,
             fontWeight: FontWeight.bold,
             fontSize: 24

@@ -24,6 +24,7 @@ class AuthController extends GetxController {
     super.onInit();
     currentUser.bindStream(auth.userChanges());
     ever(currentUser, AuthDirection.initialScreen);
+
   }
 
   void register() async {

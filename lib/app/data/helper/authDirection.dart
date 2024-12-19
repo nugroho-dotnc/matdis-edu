@@ -2,15 +2,18 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:matdis_edu/app/routes/app_pages.dart';
 
 class AuthDirection {
   static FirebaseAuth auth = FirebaseAuth.instance;
   static FirebaseFirestore firestore = FirebaseFirestore.instance;
   static final user = auth.currentUser;
+  static final box = GetStorage();
   static initialScreen(User? user) async {
     if (user != null) {
       String role = await getRole(user.uid);
+      box.write("role", role);
       if(role == "admin"){
         Get.offNamed(Routes.ADMIN);
       }else{
@@ -30,7 +33,8 @@ class AuthDirection {
   }
   static logout() async {
     try{
-      await auth.signOut().then((value) => Get.offAllNamed(Routes.AUTH,));
+      await auth.signOut();
+      Get.offAllNamed(Routes.AUTH,);
     }catch(e){
       Get.snackbar("error", e.toString());
     }

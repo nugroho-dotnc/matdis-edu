@@ -51,6 +51,8 @@ dependencies:
   chewie: ^1.8.5
   sliding_up_panel: ^2.0.0
   syncfusion_flutter_pdfviewer: ^28.1.33
+  get_storage: ^2.1.1
+  carousel_slider: ^5.0.0
 
 dev_dependencies:
   flutter_test:
